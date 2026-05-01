@@ -36,9 +36,9 @@ local function post_traffic(premature, data)
     })
 
     if not res then
-        ngx.log(ngx.ERR, "Failed to post traffic: ", err)
+        ngx.log(ngx.DEBUG, "Traffic logger skipped: ", err)
     elseif res.status >= 400 then
-        ngx.log(ngx.ERR, "Traffic logger upstream status ", res.status, " body=", res.body or "")
+        ngx.log(ngx.DEBUG, "Traffic logger upstream status ", res.status)
     end
 end
 
