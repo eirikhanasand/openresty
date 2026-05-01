@@ -42,16 +42,22 @@ local function read_file(path)
 end
 
 local function html_escape(value)
-    return tostring(value)
+    local escaped = tostring(value)
         :gsub("&", "&amp;")
         :gsub("<", "&lt;")
         :gsub(">", "&gt;")
         :gsub('"', "&quot;")
         :gsub("'", "&#39;")
+
+    return escaped
 end
 
 local function js_escape(value)
-    return html_escape(value):gsub("\\", "\\\\"):gsub("'", "\\'")
+    local escaped = html_escape(value)
+        :gsub("\\", "\\\\")
+        :gsub("'", "\\'")
+
+    return escaped
 end
 
 local function base_domain(host)
