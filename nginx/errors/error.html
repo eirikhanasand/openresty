@@ -2,7 +2,8 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8">
-        <title>500 - Internal Server Error</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Request Error</title>
         <style>
             :root {
                 --bg-dark: #000000;
@@ -39,7 +40,7 @@
                 padding: 60px 80px;
                 text-align: center;
                 width: 500px;
-                max-width: 500px;
+                max-width: calc(100vw - 32px);
                 animation: fadeIn 0.8s ease-out;
             }
 
@@ -61,7 +62,7 @@
                 font-size: 1rem;
                 color: #a1a1aa;
                 margin: 0 auto 1.8rem auto;
-                max-width: 250px;
+                max-width: 320px;
             }
 
             a {
@@ -100,19 +101,46 @@
     </head>
     <body>
         <div class="container">
-            <h1>500</h1>
-            <h2>Internal Server Error</h2>
-            <p>The site could not be reached. Please try again.</p>
+            <h1 id="status-code">500</h1>
+            <h2 id="status-title">Internal Server Error</h2>
+            <p id="status-message">The site could not be reached. Please try again.</p>
             <a id="home-link" href="#">Go Home</a>
         </div>
 
-        <footer>© <span id="year"></span> <span id="domain"></span></footer>
+        <footer>&copy; <span id="year"></span> <span id="domain"></span></footer>
 
         <script>
+            const errors = {
+                400: ['Bad Request', 'The request could not be understood by this server.'],
+                401: ['Unauthorized', 'This page requires authorization before it can be viewed.'],
+                403: ['Forbidden', 'You do not have access to this page.'],
+                404: ['Page Not Found', 'The page you are looking for does not exist on {domain}.'],
+                405: ['Method Not Allowed', 'This request method is not allowed here.'],
+                406: ['Not Acceptable', 'The requested response format is not available.'],
+                408: ['Request Timeout', 'The server timed out waiting for the request.'],
+                409: ['Conflict', 'The request conflicts with the current state of this resource.'],
+                410: ['Gone', 'This resource is no longer available.'],
+                418: ["I'm a teapot", 'This endpoint refuses to brew coffee.'],
+                429: ['Too Many Requests', 'Slow down and try again in a moment.'],
+                451: ['Unavailable for Legal Reasons', 'This resource is unavailable for legal reasons.'],
+                500: ['Internal Server Error', 'The site could not be reached. Please try again.'],
+                501: ['Not Implemented', 'This feature is not implemented on this server.'],
+                502: ['Bad Gateway', 'The upstream service returned an invalid response.'],
+                503: ['Service Unavailable', 'The service is temporarily unavailable. Please try again soon.'],
+                504: ['Gateway Timeout', 'The upstream service took too long to respond.'],
+            };
+            const params = new URLSearchParams(window.location.search);
+            const code = Number(params.get('code')) || 500;
+            const [title, message] = errors[code] || errors[500];
             const fullHostname = window.location.hostname || 'hanasand.com';
             const parts = fullHostname.split('.');
             const domain = parts.length >= 2 ? parts.slice(-2).join('.') : fullHostname;
             const homeLink = document.getElementById('home-link');
+
+            document.title = `${code} - ${title}`;
+            document.getElementById('status-code').textContent = String(code);
+            document.getElementById('status-title').textContent = title;
+            document.getElementById('status-message').textContent = message.replace('{domain}', domain);
             homeLink.href = domain ? `https://${domain}` : 'https://hanasand.com';
             document.querySelectorAll('#domain').forEach(el => el.textContent = domain);
             document.getElementById('year').textContent = new Date().getFullYear();
