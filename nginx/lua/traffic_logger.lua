@@ -23,7 +23,7 @@ local function post_traffic(premature, data)
 
     local http = require "resty.http"
     local httpc = http.new()
-    httpc:set_timeout(200)
+    httpc:set_timeout(1000)
 
     local res, err = httpc:request_uri("http://127.0.0.1:8501/api/traffic", {
         method = "POST",
