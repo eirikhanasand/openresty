@@ -1,0 +1,25 @@
+services:
+  openresty:
+    container_name: openresty
+    build: .
+    restart: unless-stopped
+    network_mode: host
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    volumes:
+      - ./nginx/conf/nginx.conf:/usr/local/openresty/nginx/conf/nginx.conf:ro
+      - ./nginx/conf.d:/usr/local/openresty/nginx/conf.d:ro
+      - ./nginx/snippets:/usr/local/openresty/nginx/conf/snippets:ro
+      - ./nginx/errors:/usr/local/openresty/nginx/errors:ro
+      - ./nginx/lua:/usr/local/openresty/nginx/lua:ro
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+    mem_limit: 512m
+    cpus: "1.0"
+    healthcheck:
+      test: ["CMD", "openresty", "-t"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
