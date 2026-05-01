@@ -3,7 +3,7 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>Request Error</title>
+        <title>{{code}} - {{title}}</title>
         <style>
             :root {
                 --bg-dark: #000000;
@@ -77,6 +77,18 @@
                 box-shadow: 0 4px 20px rgba(10, 132, 255, 0.3);
             }
 
+            .actions {
+                display: flex;
+                justify-content: center;
+                gap: 0.8rem;
+                flex-wrap: wrap;
+            }
+
+            .secondary {
+                background: rgba(255, 255, 255, 0.08);
+                box-shadow: none;
+            }
+
             a:hover {
                 background: #0071e3;
                 box-shadow: 0 6px 25px rgba(10, 132, 255, 0.5);
@@ -101,49 +113,43 @@
     </head>
     <body>
         <div class="container">
-            <h1 id="status-code">500</h1>
-            <h2 id="status-title">Internal Server Error</h2>
-            <p id="status-message">The site could not be reached. Please try again.</p>
-            <a id="home-link" href="#">Go Home</a>
+            <h1>{{code}}</h1>
+            <h2>{{title}}</h2>
+            <p>{{message}}</p>
+            <p id="retry-message"></p>
+            <div class="actions">
+                <a id="retry-link" href="#">Try Again</a>
+                <a class="secondary" id="home-link" href="#">Go Home</a>
+            </div>
         </div>
 
-        <footer>&copy; <span id="year"></span> <span id="domain"></span></footer>
+        <footer>&copy; <span id="year"></span> {{domain}}</footer>
 
         <script>
-            const errors = {
-                400: ['Bad Request', 'The request could not be understood by this server.'],
-                401: ['Unauthorized', 'This page requires authorization before it can be viewed.'],
-                403: ['Forbidden', 'You do not have access to this page.'],
-                404: ['Page Not Found', 'The page you are looking for does not exist on {domain}.'],
-                405: ['Method Not Allowed', 'This request method is not allowed here.'],
-                406: ['Not Acceptable', 'The requested response format is not available.'],
-                408: ['Request Timeout', 'The server timed out waiting for the request.'],
-                409: ['Conflict', 'The request conflicts with the current state of this resource.'],
-                410: ['Gone', 'This resource is no longer available.'],
-                418: ["I'm a teapot", 'This endpoint refuses to brew coffee.'],
-                429: ['Too Many Requests', 'Slow down and try again in a moment.'],
-                451: ['Unavailable for Legal Reasons', 'This resource is unavailable for legal reasons.'],
-                500: ['Internal Server Error', 'The site could not be reached. Please try again.'],
-                501: ['Not Implemented', 'This feature is not implemented on this server.'],
-                502: ['Bad Gateway', 'The upstream service returned an invalid response.'],
-                503: ['Service Unavailable', 'The service is temporarily unavailable. Please try again soon.'],
-                504: ['Gateway Timeout', 'The upstream service took too long to respond.'],
-            };
+            const retryable = {{retryable}};
+            const maxRetries = 5;
+            const retryBaseSeconds = 5;
             const params = new URLSearchParams(window.location.search);
-            const code = Number(params.get('code')) || 500;
-            const [title, message] = errors[code] || errors[500];
-            const fullHostname = window.location.hostname || 'hanasand.com';
-            const parts = fullHostname.split('.');
-            const domain = parts.length >= 2 ? parts.slice(-2).join('.') : fullHostname;
+            const retries = Math.min(Number(params.get('retries')) || 0, maxRetries);
             const homeLink = document.getElementById('home-link');
+            const retryLink = document.getElementById('retry-link');
+            const retryMessage = document.getElementById('retry-message');
+            const retryUrl = new URL(window.location.href);
 
-            document.title = `${code} - ${title}`;
-            document.getElementById('status-code').textContent = String(code);
-            document.getElementById('status-title').textContent = title;
-            document.getElementById('status-message').textContent = message.replace('{domain}', domain);
-            homeLink.href = domain ? `https://${domain}` : 'https://hanasand.com';
-            document.querySelectorAll('#domain').forEach(el => el.textContent = domain);
+            homeLink.href = '{{home_url}}';
+            retryUrl.searchParams.set('retries', String(retries + 1));
+            retryLink.href = retryUrl.toString();
             document.getElementById('year').textContent = new Date().getFullYear();
+
+            if (retryable && retries < maxRetries) {
+                const delaySeconds = retryBaseSeconds * Math.pow(2, retries);
+                retryMessage.textContent = `Retrying in ${delaySeconds}s. Attempt ${retries + 1} of ${maxRetries}.`;
+                window.setTimeout(() => window.location.assign(retryLink.href), delaySeconds * 1000);
+            } else if (retryable) {
+                retryMessage.textContent = 'Automatic retries stopped. Try again manually when you are ready.';
+            } else {
+                retryMessage.remove();
+            }
         </script>
     </body>
 </html>
