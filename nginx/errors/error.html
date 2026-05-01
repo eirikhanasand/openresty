@@ -3,7 +3,7 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>{{code}} - {{title}}</title>
+        <title>Request Error</title>
         <style>
             :root {
                 --bg-dark: #000000;
@@ -113,9 +113,9 @@
     </head>
     <body>
         <div class="container">
-            <h1>{{code}}</h1>
-            <h2>{{title}}</h2>
-            <p>{{message}}</p>
+            <h1 id="status-code">500</h1>
+            <h2 id="status-title">Internal Server Error</h2>
+            <p id="status-message">The site could not be reached. Please try again.</p>
             <p id="retry-message"></p>
             <div class="actions">
                 <a id="retry-link" href="#">Try Again</a>
@@ -123,20 +123,62 @@
             </div>
         </div>
 
-        <footer>&copy; <span id="year"></span> {{domain}}</footer>
+        <footer>&copy; <span id="year"></span> <span id="domain"></span></footer>
 
         <script>
-            const retryable = {{retryable}};
+            const errors = {
+                400: ['Bad Request', 'The request could not be understood by this server.'],
+                401: ['Unauthorized', 'This page requires authorization before it can be viewed.'],
+                403: ['Forbidden', 'You do not have access to this page.'],
+                404: ['Page Not Found', 'The page you are looking for does not exist on {domain}.'],
+                405: ['Method Not Allowed', 'This request method is not allowed here.'],
+                406: ['Not Acceptable', 'The requested response format is not available.'],
+                408: ['Request Timeout', 'The server timed out waiting for the request.'],
+                409: ['Conflict', 'The request conflicts with the current state of this resource.'],
+                410: ['Gone', 'This resource is no longer available.'],
+                418: ["I'm a teapot", 'This endpoint refuses to brew coffee.'],
+                429: ['Too Many Requests', 'Slow down and try again in a moment.'],
+                451: ['Unavailable for Legal Reasons', 'This resource is unavailable for legal reasons.'],
+                500: ['Internal Server Error', 'The site could not be reached. Please try again.'],
+                501: ['Not Implemented', 'This feature is not implemented on this server.'],
+                502: ['Bad Gateway', 'The upstream service returned an invalid response.'],
+                503: ['Service Unavailable', 'The service is temporarily unavailable. Please try again soon.'],
+                504: ['Gateway Timeout', 'The upstream service took too long to respond.'],
+            };
+            const rendered = {
+                code: Number('{{code}}'),
+                title: '{{title}}',
+                message: '{{message}}',
+                domain: '{{domain}}',
+                homeUrl: '{{home_url}}',
+                retryable: '{{retryable}}' === 'true',
+            };
             const maxRetries = 5;
             const retryBaseSeconds = 5;
             const params = new URLSearchParams(window.location.search);
+            const renderedStatus = Number.isFinite(rendered.code);
+            const fallbackCode = Number(params.get('code')) || 500;
+            const code = renderedStatus ? rendered.code : fallbackCode;
+            const [fallbackTitle, fallbackMessage] = errors[code] || errors[500];
+            const fullHostname = window.location.hostname || 'hanasand.com';
+            const parts = fullHostname.split('.');
+            const fallbackDomain = parts.length >= 2 ? parts.slice(-2).join('.') : fullHostname;
+            const domain = renderedStatus ? rendered.domain : fallbackDomain;
+            const title = renderedStatus ? rendered.title : fallbackTitle;
+            const message = renderedStatus ? rendered.message : fallbackMessage.replace('{domain}', domain);
+            const retryable = renderedStatus ? rendered.retryable : [408, 429, 500, 502, 503, 504].includes(code);
             const retries = Math.min(Number(params.get('retries')) || 0, maxRetries);
             const homeLink = document.getElementById('home-link');
             const retryLink = document.getElementById('retry-link');
             const retryMessage = document.getElementById('retry-message');
             const retryUrl = new URL(window.location.href);
 
-            homeLink.href = '{{home_url}}';
+            document.title = `${code} - ${title}`;
+            document.getElementById('status-code').textContent = String(code);
+            document.getElementById('status-title').textContent = title;
+            document.getElementById('status-message').textContent = message;
+            document.getElementById('domain').textContent = domain;
+            homeLink.href = renderedStatus ? rendered.homeUrl : `https://${domain}`;
             retryUrl.searchParams.set('retries', String(retries + 1));
             retryLink.href = retryUrl.toString();
             document.getElementById('year').textContent = new Date().getFullYear();
