@@ -105,7 +105,6 @@
                 font-weight: 650;
                 letter-spacing: 0.18em;
                 padding: 8px 12px;
-                text-transform: uppercase;
             }
 
             .eyebrow::before {
@@ -215,7 +214,6 @@
                 font-weight: 600;
                 left: 0;
                 letter-spacing: 0.08em;
-                text-transform: uppercase;
             }
 
             @keyframes fadeIn {
@@ -333,7 +331,7 @@
             document.getElementById('status-code').textContent = String(code);
             document.getElementById('status-title').textContent = title;
             document.getElementById('status-message').textContent = message;
-            document.getElementById('domain').textContent = domain;
+            document.getElementById('domain').textContent = domain === 'hanasand.com' ? 'Hanasand' : domain;
             homeLink.href = renderedStatus ? rendered.homeUrl : `https://${domain}`;
             retryUrl.searchParams.set('retries', String(retries + 1));
             retryLink.href = retryUrl.toString();
