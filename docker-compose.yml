@@ -15,11 +15,13 @@ services:
       - ./nginx/snippets:/usr/local/openresty/nginx/conf/snippets:ro
       - ./nginx/errors:/usr/local/openresty/nginx/errors:ro
       - ./nginx/lua:/usr/local/openresty/nginx/lua:ro
-      - /etc/letsencrypt:/etc/letsencrypt:ro
+      - ./letsencrypt:/etc/letsencrypt
+      - ./certbot-credentials:/etc/certbot-credentials:ro
+      - ./scripts:/usr/local/openresty/certbot-scripts:ro
     mem_limit: 512m
     cpus: "1.0"
     healthcheck:
-      test: ["CMD", "openresty", "-t"]
+      test: ["CMD", "/usr/local/openresty/bin/openresty", "-t"]
       interval: 30s
       timeout: 10s
       retries: 3
