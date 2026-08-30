@@ -197,6 +197,15 @@
                 border-color: var(--line);
             }
 
+            .request-id {
+                color: var(--text-faint);
+                font-family: ui-monospace, "SF Mono", Menlo, monospace;
+                font-size: 0.68rem;
+                margin: 0 0 16px;
+                max-width: none;
+                overflow-wrap: anywhere;
+            }
+
             #retry-message {
                 color: var(--text-faint);
                 font-size: 0.84rem;
@@ -268,6 +277,7 @@
                     <h2 id="status-title">Internal Server Error</h2>
                     <p id="status-message">The site could not be reached. Please try again.</p>
                     <p id="retry-message"></p>
+                    <p id="request-id" class="request-id">Request ID: <span></span></p>
                     <div class="actions">
                         <a id="retry-link" href="#">Try Again</a>
                         <a class="secondary" id="home-link" href="#">Go Home</a>
@@ -294,7 +304,7 @@
                 451: ['Unavailable for Legal Reasons', 'This resource is unavailable for legal reasons.'],
                 500: ['Internal Server Error', 'The site could not be reached. Please try again.'],
                 501: ['Not Implemented', 'This feature is not implemented on this server.'],
-                502: ['Bad Gateway', 'The upstream service returned an invalid response.'],
+                502: ['Bad Gateway', 'Invalid response'],
                 503: ['Service Unavailable', 'The service is temporarily unavailable. Please try again soon.'],
                 504: ['Gateway Timeout', 'The upstream service took too long to respond.'],
             };
@@ -305,6 +315,7 @@
                 domain: '{{domain}}',
                 homeUrl: '{{home_url}}',
                 retryable: '{{retryable}}' === 'true',
+                requestId: '{{request_id}}',
             };
             const maxRetries = 5;
             const retryBaseSeconds = 5;
@@ -332,6 +343,7 @@
             document.getElementById('status-title').textContent = title;
             document.getElementById('status-message').textContent = message;
             document.getElementById('domain').textContent = domain === 'hanasand.com' ? 'Hanasand' : domain;
+            document.querySelector('#request-id span').textContent = rendered.requestId;
             homeLink.href = renderedStatus ? rendered.homeUrl : `https://${domain}`;
             retryUrl.searchParams.set('retries', String(retries + 1));
             retryLink.href = retryUrl.toString();
@@ -342,7 +354,7 @@
                 retryMessage.textContent = `Retrying in ${delaySeconds}s. Attempt ${retries + 1} of ${maxRetries}.`;
                 window.setTimeout(() => window.location.assign(retryLink.href), delaySeconds * 1000);
             } else if (retryable) {
-                retryMessage.textContent = 'Automatic retries stopped. Try again manually when you are ready.';
+                retryMessage.textContent = 'Automatic retries stopped. Try again later.';
             } else {
                 retryMessage.remove();
             }

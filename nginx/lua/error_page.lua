@@ -16,7 +16,7 @@ local errors = {
     [451] = {"Unavailable for Legal Reasons", "This resource is unavailable for legal reasons."},
     [500] = {"Internal Server Error", "The site could not be reached. Please try again."},
     [501] = {"Not Implemented", "This feature is not implemented on this server."},
-    [502] = {"Bad Gateway", "The upstream service returned an invalid response."},
+    [502] = {"Bad Gateway", "Invalid response"},
     [503] = {"Service Unavailable", "The service is temporarily unavailable. Please try again soon."},
     [504] = {"Gateway Timeout", "The upstream service took too long to respond."},
 }
@@ -82,6 +82,7 @@ local body = read_file(template_path)
 
 ngx.status = code
 ngx.header.content_type = "text/html; charset=utf-8"
+ngx.header["X-Request-ID"] = ngx.var.request_id or "unknown"
 
 if not body then
     ngx.say(code .. " - " .. title)
@@ -95,5 +96,6 @@ body = body:gsub("{{message}}", html_escape(message))
 body = body:gsub("{{domain}}", html_escape(domain))
 body = body:gsub("{{home_url}}", js_escape("https://" .. domain))
 body = body:gsub("{{retryable}}", retryable[code] and "true" or "false")
+body = body:gsub("{{request_id}}", html_escape(ngx.var.request_id or "unknown"))
 
 ngx.say(body)
