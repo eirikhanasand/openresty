@@ -8,7 +8,7 @@ MODE="${CERTBOT_RENEW_MODE:-live}"
 
 extra=""
 if [ "$MODE" = "dry-run" ]; then
-    extra="--dry-run"
+    extra="--dry-run --run-deploy-hooks"
 elif [ "$MODE" != "live" ]; then
     echo "Unsupported CERTBOT_RENEW_MODE: $MODE" >&2
     exit 2
