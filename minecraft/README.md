@@ -5,7 +5,8 @@ Players use `name-pending.hanasand.com`, `67.hanasand.com`, or
 explicit `:443` also works. `np.hanasand.com` is an additional alias for Name Pending. These are Java Edition server addresses, not URLs.
 Each modded server still requires its own matching client version and mods.
 
-OpenResty's stream listener owns IPv4/IPv6 port 443. TLS goes to the existing
+OpenResty's stream listener owns IPv4/IPv6 port 443. NetherNet HTTP signaling
+for np.hanasand.com goes through loopback 8444; TLS goes to the existing
 HTTP virtual hosts on `127.0.0.1:8443`; other connections go to mc-router on
 `127.0.0.1:25566`. PROXY protocol preserves the original IP for HTTPS and router
 logs. mc-router routes only the configured hostnames across the existing
@@ -68,3 +69,11 @@ Restore its `nginx.conf`, `default.conf`, and `cashflow.conf` to their correspon
 Nginx paths, validate and reload. Restore any server Compose file requiring its
 old public port and recreate only that server. Restore the previous DNS routing
 if reverting the client addresses. Never replace or delete the world directories.
+
+## Name Pending on iPad
+
+Bedrock address: `np.hanasand.com`, port `443`. Geyser NetherNet handles UDP
+443 directly. `nginx/conf.d/bedrock.conf` routes HTTP/HTTPS signaling at
+`/v1/join` to loopback TCP 19132. The Name Pending source repository owns
+Geyser, Floodgate, and deployment settings. Player authentication and the
+whitelist remain enabled.
