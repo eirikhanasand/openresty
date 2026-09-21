@@ -8,3 +8,6 @@
 !nginx/**
 !docs/
 !docs/**
+
+!minecraft/
+!minecraft/**

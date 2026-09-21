@@ -1,0 +1,28 @@
+services:
+  minecraft:
+    image: itzg/minecraft-server:java21
+    container_name: cobbleverse
+    mem_limit: 14g
+    cpus: "6.0"
+    ports:
+      - "127.0.0.1:5000:25565"
+    environment:
+      EULA: "TRUE"
+      TYPE: "MODRINTH"
+      MODRINTH_MODPACK: "cobbleverse"
+      MODRINTH_VERSION: "1.7.42"
+      MODRINTH_EXCLUDE_FILES: "c2me-fabric-"
+      MODRINTH_PROJECTS: |
+        configurable:4IO3KqeL
+        c2me-fabric:1vHN61jT
+      MODRINTH_DOWNLOAD_DEPENDENCIES: "required"
+      VERSION: "1.21.1"
+      MODRINTH_LOADER: "fabric"
+      MEMORY: "12G"
+      JVM_OPTS: "-XX:+AlwaysPreTouch -XX:+ParallelRefProcEnabled -XX:ParallelGCThreads=6 -XX:+PerfDisableSharedMem -XX:+UnlockExperimentalVMOptions -XX:+DisableExplicitGC -XX:+UseZGC"
+      ENABLE_RCON: "true"
+      RCON_PASSWORD: ${RCON_PASSWORD}
+      MOTD: "Cobbleverse"
+    volumes:
+      - ./data:/data
+    restart: unless-stopped
