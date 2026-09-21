@@ -2,13 +2,13 @@
 
 Players use `name-pending.hanasand.com`, `67.hanasand.com`, or
 `cobbleverse.hanasand.com`. The `_minecraft._tcp` SRV records select TCP 443;
-explicit `:443` also works. These are Java Edition server addresses, not URLs.
+explicit `:443` also works. `np.hanasand.com:443` is an additional alias for Name Pending. These are Java Edition server addresses, not URLs.
 Each modded server still requires its own matching client version and mods.
 
 OpenResty's stream listener owns IPv4/IPv6 port 443. TLS goes to the existing
 HTTP virtual hosts on `127.0.0.1:8443`; other connections go to mc-router on
 `127.0.0.1:25566`. PROXY protocol preserves the original IP for HTTPS and router
-logs. mc-router routes only the three configured hostnames across the existing
+logs. mc-router routes only the configured hostnames across the existing
 Docker networks. It needs no Docker socket or administrative API. Minecraft
 backends retain their own authentication; their socket peer is the router.
 

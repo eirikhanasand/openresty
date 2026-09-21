@@ -2,7 +2,7 @@
 """Check Minecraft status/pong responses without logging in or modifying a world."""
 import argparse, io, json, socket, struct
 
-ROUTES = {"name-pending.hanasand.com": 774, "67.hanasand.com": 767, "cobbleverse.hanasand.com": 767}
+ROUTES = {"np.hanasand.com": 774, "name-pending.hanasand.com": 774, "67.hanasand.com": 767, "cobbleverse.hanasand.com": 767}
 
 def varint(value):
     data = bytearray()
