@@ -3,7 +3,7 @@
 import argparse, base64, configparser, json, urllib.request
 from pathlib import Path
 
-NAMES = ('name-pending', '67', 'cobbleverse')
+NAMES = ('name-pending', 'np', '67', 'cobbleverse')
 DOMAIN = 'hanasand.com'
 
 def main():
@@ -45,7 +45,7 @@ def main():
         saved = api(path)
         for r in desired:
             assert any(all(str(x.get(k)) == str(v) for k,v in r.items()) for x in saved), r
-        print('Verified all six DNS records.')
+        print(f'Verified all {len(desired)} DNS records.')
 
 if __name__ == '__main__':
     main()

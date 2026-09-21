@@ -2,7 +2,7 @@
 
 Players use `name-pending.hanasand.com`, `67.hanasand.com`, or
 `cobbleverse.hanasand.com`. The `_minecraft._tcp` SRV records select TCP 443;
-explicit `:443` also works. `np.hanasand.com:443` is an additional alias for Name Pending. These are Java Edition server addresses, not URLs.
+explicit `:443` also works. `np.hanasand.com` is an additional alias for Name Pending. These are Java Edition server addresses, not URLs.
 Each modded server still requires its own matching client version and mods.
 
 OpenResty's stream listener owns IPv4/IPv6 port 443. TLS goes to the existing
@@ -53,7 +53,7 @@ python3 minecraft/setup_dns.py --apply
 ```
 
 `setup_dns.py` defaults to a dry run. It reads the existing Domeneshop Certbot
-credentials from `letsencrypt/domeneshop.ini`, updates only the three A and three
+credentials from `letsencrypt/domeneshop.ini`, updates only the four A and four
 SRV records, and reads them back to verify. It never prints or stores credentials.
 
 Run `python3 minecraft/check_routes.py --forge` from outside the server to test
