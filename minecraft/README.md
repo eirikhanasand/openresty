@@ -73,7 +73,7 @@ if reverting the client addresses. Never replace or delete the world directories
 ## Name Pending on iPad
 
 Bedrock address: `np.hanasand.com`, port `443`. Geyser NetherNet handles UDP
-443 directly. `nginx/conf.d/bedrock.conf` routes HTTP/HTTPS signaling at
+19132 directly (UDP 443 is blocked upstream). `nginx/conf.d/bedrock.conf` routes HTTP/HTTPS signaling at
 `/v1/join` to loopback TCP 19132. The Name Pending source repository owns
 Geyser, Floodgate, and deployment settings. Player authentication and the
 whitelist remain enabled.
